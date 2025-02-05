@@ -1,0 +1,11 @@
+.container_clock {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.container_clocks {
+  display: flex;
+  flex-wrap: wrap;
+}
