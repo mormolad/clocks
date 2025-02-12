@@ -4,83 +4,41 @@ import { RootState } from '../../store/store';
 
 interface ClockProps {
   clockId: number;
-  date: Date;
+  date: Date; // Время передается извне
 }
 
 const Clock: React.FC<ClockProps> = ({ clockId, date }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Получаем данные о часах из Redux
   const clock = useSelector((state: RootState) =>
     state.clock.clocks.find((clock) => clock.id === clockId)
   );
 
-  useEffect(() => {
-    const drawClock = () => {
-      if (!canvasRef.current) return;
-      const ctx = canvasRef.current.getContext('2d');
-      if (!ctx) return;
+  // Функция для рисования меток часов (1-12)
+  const drawNumbers = (ctx: CanvasRenderingContext2D, radius: number) => {
+    ctx.font = `${radius * 0.15}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let num = 1; num <= 12; num++) {
+      const angle = (num * Math.PI) / 6;
+      ctx.rotate(angle);
+      ctx.translate(0, -radius * 0.85);
+      ctx.rotate(-angle);
+      ctx.fillText(num.toString(), 0, 0);
+      ctx.rotate(angle);
+      ctx.translate(0, radius * 0.85);
+      ctx.rotate(-angle);
+    }
+  };
 
-      const radius = canvasRef.current.height / 2;
-
-      // Сохраняем состояние контекста
-      ctx.save();
-
-      // Очищаем холст
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-      // Перемещаем начало координат в центр холста
-      ctx.translate(radius, radius);
-
-      // Поворачиваем холст на 90 градусов против часовой стрелки
-      ctx.rotate(-Math.PI / 2);
-
-      let now = new Date();
-
-      // Корректировка времени на выбранный часовой пояс
-      if (clock && clock.timezone) {
-        const offset = parseInt(clock.timezone, 10); // Смещение в часах
-        now.setHours(now.getHours() + offset);
-      }
-
-      const seconds = now.getSeconds();
-      const minutes = now.getMinutes();
-      const hours = now.getHours();
-
-      // Рисуем циферблат
-      drawFace(ctx, radius);
-
-      // Рисуем стрелки
-      drawHand(ctx, (seconds * Math.PI) / 30, radius * 0.9, radius * 0.02); // Секундная стрелка
-      drawHand(
-        ctx,
-        (minutes * Math.PI) / 30 + (seconds * Math.PI) / 1800,
-        radius * 0.7,
-        radius * 0.04
-      ); // Минутная стрелка
-      drawHand(
-        ctx,
-        ((hours % 12) * Math.PI) / 6 +
-          (minutes * Math.PI) / 360 +
-          (seconds * Math.PI) / 21600,
-        radius * 0.5,
-        radius * 0.06
-      ); // Часовая стрелка
-
-      // Восстанавливаем состояние контекста
-      ctx.restore();
-    };
-
-    drawClock();
-  }, [date, clock]);
-
+  // Функция для рисования циферблата
   const drawFace = (ctx: CanvasRenderingContext2D, radius: number) => {
-    // Рисуем внешний круг (циферблат)
     ctx.beginPath();
     ctx.arc(0, 0, radius * 0.95, 0, 2 * Math.PI);
     ctx.fillStyle = 'white';
     ctx.fill();
 
-    // Создаем градиент для обводки
     const grad = ctx.createRadialGradient(
       0,
       0,
@@ -92,17 +50,20 @@ const Clock: React.FC<ClockProps> = ({ clockId, date }) => {
     grad.addColorStop(0, '#333');
     grad.addColorStop(0.5, 'white');
     grad.addColorStop(1, '#333');
+
     ctx.strokeStyle = grad;
     ctx.lineWidth = radius * 0.1;
     ctx.stroke();
 
-    // Рисуем центральный кружок
     ctx.beginPath();
     ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
     ctx.fillStyle = '#333';
     ctx.fill();
+
+    drawNumbers(ctx, radius); // Добавляем метки часов
   };
 
+  // Функция для рисования стрелок
   const drawHand = (
     ctx: CanvasRenderingContext2D,
     pos: number,
@@ -118,6 +79,132 @@ const Clock: React.FC<ClockProps> = ({ clockId, date }) => {
     ctx.stroke();
     ctx.rotate(-pos);
   };
+
+  // Основная функция для рисования часов
+  // Основная функция для рисования часов
+  // const drawClock = () => {
+  //   if (!canvasRef.current) return;
+  //   const ctx = canvasRef.current.getContext('2d');
+  //   if (!ctx) return;
+
+  //   const radius = canvasRef.current.height / 2;
+  //   ctx.save();
+  //   ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  //   ctx.translate(radius, radius);
+
+  //   let now = new Date(date.getTime()); // Создаем копию переданного времени
+  //   let hours = now.getHours();
+  //   let minutes = now.getMinutes();
+  //   let seconds = now.getSeconds();
+  //   // Применяем временную зону, если она задана
+  //   if (clock && clock.timezone) {
+  //     const options: Intl.DateTimeFormatOptions = {
+  //       hour: 'numeric',
+  //       minute: 'numeric',
+  //       second: 'numeric',
+  //       timeZone: clock.timezone, // Используем временную зону из Redux
+  //     };
+
+  //     // Преобразуем время в указанном часовом поясе
+  //     const formattedTime = new Intl.DateTimeFormat(
+  //       'en-US',
+  //       options
+  //     ).formatToParts(now);
+
+  //     // Извлекаем часы, минуты и секунды
+  //     hours = parseInt(
+  //       formattedTime.find((part) => part.type === 'hour')?.value || '0',
+  //       10
+  //     );
+  //     minutes = parseInt(
+  //       formattedTime.find((part) => part.type === 'minute')?.value || '0',
+  //       10
+  //     );
+  //     seconds = parseInt(
+  //       formattedTime.find((part) => part.type === 'second')?.value || '0',
+  //       10
+  //     );
+
+  //     // Обновляем время
+  //     now.setHours(hours, minutes, seconds, 0);
+  //   }
+
+  //   // Рассчитываем углы стрелок
+  //   const secondsAngle = (seconds * Math.PI) / 30;
+  //   const minutesAngle = (minutes * Math.PI) / 30 + (seconds * Math.PI) / 1800;
+  //   const hoursAngle =
+  //     ((hours % 12) * Math.PI) / 6 +
+  //     (minutes * Math.PI) / 360 +
+  //     (seconds * Math.PI) / 21600;
+
+  //   // Рисуем циферблат и стрелки
+  //   drawFace(ctx, radius);
+  //   drawHand(ctx, secondsAngle, radius * 0.85, radius * 0.02); // Секундная стрелка
+  //   drawHand(ctx, minutesAngle, radius * 0.7, radius * 0.04); // Минутная стрелка
+  //   drawHand(ctx, hoursAngle, radius * 0.35, radius * 0.06); // Часовая стрелка
+
+  //   ctx.restore();
+  // };
+  const drawClock = () => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext('2d');
+    if (!ctx) return;
+
+    const radius = canvasRef.current.height / 2;
+    ctx.save();
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    ctx.translate(radius, radius);
+
+    let now = new Date(date.getTime()); // Создаем копию переданного времени
+
+    // Применяем временную зону, если она задана
+    if (clock && clock.timezone) {
+      try {
+        // Проверяем, является ли часовой пояс смещением (например, "+5")
+        const offsetMatch = clock.timezone.match(/^([+-]?\d+)$/);
+
+        if (offsetMatch) {
+          // Парсим смещение
+          const offsetHours = parseInt(offsetMatch[1], 10);
+
+          if (isNaN(offsetHours)) {
+            throw new Error(`Неверный формат смещения: ${clock.timezone}`);
+          }
+
+          // Применяем смещение к времени
+          now.setUTCMinutes(now.getUTCMinutes() + offsetHours * 60);
+        } else {
+          console.warn(
+            `Неверный формат часового пояса "${clock.timezone}". Используется UTC.`
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        now = new Date(date.getTime()); // Возвращаемся к исходному времени (UTC)
+      }
+    }
+
+    // Рассчитываем углы стрелок
+    const secondsAngle = (now.getSeconds() * Math.PI) / 30;
+    const minutesAngle =
+      (now.getMinutes() * Math.PI) / 30 + (now.getSeconds() * Math.PI) / 1800;
+    const hoursAngle =
+      ((now.getHours() % 12) * Math.PI) / 6 +
+      (now.getMinutes() * Math.PI) / 360 +
+      (now.getSeconds() * Math.PI) / 21600;
+
+    // Рисуем циферблат и стрелки
+    drawFace(ctx, radius);
+    drawHand(ctx, secondsAngle, radius * 0.85, radius * 0.02); // Секундная стрелка
+    drawHand(ctx, minutesAngle, radius * 0.7, radius * 0.04); // Минутная стрелка
+    drawHand(ctx, hoursAngle, radius * 0.35, radius * 0.06); // Часовая стрелка
+
+    ctx.restore();
+  };
+  // Перерисовываем часы при изменении `date` или `clock`
+  useEffect(() => {
+    drawClock();
+  }, [date, clock]);
 
   return <canvas ref={canvasRef} height="200" width="200"></canvas>;
 };

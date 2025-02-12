@@ -6,25 +6,38 @@ import { addClock, removeClock } from '../../store/reducers';
 import { AppDispatch, RootState } from '../../store/store';
 import Loader from '../Loader/Loader';
 import styles from './style.module.css';
+
 const ClockList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const clocks = useSelector((state: RootState) => state.clock.clocks);
   const loading = useSelector((state: RootState) => state.clock.loading);
   const [date, setDate] = React.useState(new Date());
 
+  // Функция для получения текущего часового пояса пользователя
+  const getUserTimeZone = (): string => {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  };
+
+  // Добавление новых часов с часовым поясом
   const handleAddClock = () => {
     if (clocks.length < 10) {
-      dispatch(addClock({ id: Date.now() }));
+      const newClockId = Date.now();
+      const userTimeZone = getUserTimeZone(); // Получаем часовой пояс пользователя
+      dispatch(addClock({ id: newClockId, timezone: userTimeZone }));
     }
   };
+
+  // Удаление часов
   const handleRemoveClock = (id: number) => {
     dispatch(removeClock({ id }));
   };
 
+  // Обновление времени каждую секунду
   useEffect(() => {
     const interval = setInterval(() => {
       setDate(new Date());
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -45,7 +58,6 @@ const ClockList: React.FC = () => {
               </div>
             ))}
           </div>
-
           {clocks.length < 10 && (
             <button onClick={handleAddClock}>Добавить часы</button>
           )}
