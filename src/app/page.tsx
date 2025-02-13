@@ -14,7 +14,6 @@ const Home: React.FC = () => {
     fetch('/api/timezone/')
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         dispatch(setTimezones(data));
       })
       .catch((error) => console.error('Ошибка загрузки данных:', error));

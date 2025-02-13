@@ -1,21 +1,22 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Clock from '../Clock/Clock';
-import TimezoneSelector from '../TimezoneSelector/TimezoneSelector';
 import { addClock, removeClock } from '../../store/reducers';
 import { AppDispatch, RootState } from '../../store/store';
 import Loader from '../Loader/Loader';
+import ClockItem from '../ClockItem/ClockItem'; // Импортируем новый компонент
 import styles from './style.module.css';
 
 const ClockList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const clocks = useSelector((state: RootState) => state.clock.clocks);
   const loading = useSelector((state: RootState) => state.clock.loading);
-  const [date, setDate] = React.useState(new Date());
+  const [date, setDate] = React.useState(Date.now());
 
   // Функция для получения текущего часового пояса пользователя
-  const getUserTimeZone = (): string => {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const getUserTimeZone = () => {
+    const timezoneOffsetMinutes = new Date().getTimezoneOffset(); // Смещение в минутах
+    const timezoneOffsetHours = -timezoneOffsetMinutes / 60; // Преобразуем в часы
+    return timezoneOffsetHours;
   };
 
   // Добавление новых часов с часовым поясом
@@ -35,7 +36,7 @@ const ClockList: React.FC = () => {
   // Обновление времени каждую секунду
   useEffect(() => {
     const interval = setInterval(() => {
-      setDate(new Date());
+      setDate(Date.now());
     }, 1000);
 
     return () => clearInterval(interval);
@@ -49,13 +50,12 @@ const ClockList: React.FC = () => {
         <>
           <div className={styles.container_clocks}>
             {clocks.map((clock) => (
-              <div key={clock.id} className={styles.container_clock}>
-                <Clock clockId={clock.id} date={date} />
-                <TimezoneSelector clockId={clock.id} />
-                <button onClick={() => handleRemoveClock(clock.id)}>
-                  Удалить
-                </button>
-              </div>
+              <ClockItem
+                key={clock.id}
+                clockId={clock.id}
+                unixTime={date}
+                onRemove={handleRemoveClock}
+              />
             ))}
           </div>
           {clocks.length < 10 && (

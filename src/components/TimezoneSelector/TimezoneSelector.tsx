@@ -8,13 +8,24 @@ interface TimezoneSelectorProps {
 }
 
 const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  //Получить текущий город
+  const getCurrentCity = (timezones: { name: string; timezone: number }[]) => {
+    const userTimeZoneOffset = -new Date().getTimezoneOffset() / 60; // Получаем смещение пользователя
+    return (
+      timezones.find((tz) => tz.timezone == userTimeZoneOffset)?.name || 'UTC'
+    );
+  };
 
+  const dispatch = useDispatch<AppDispatch>();
   // Получаем данные из Redux
-  const timezones = useSelector((state: RootState) => state.clock.timezones);
   const clocks = useSelector((state: RootState) => state.clock.clocks);
   const selectedClock = useSelector((state: RootState) =>
     state.clock.clocks.find((clock) => clock.id === clockId)
+  );
+  const timezones = useSelector((state: RootState) => state.clock.timezones);
+
+  const [currentCity, setCurrentCity] = React.useState(
+    getCurrentCity(timezones)
   );
 
   // Мемоизация доступных часовых поясов
@@ -29,25 +40,29 @@ const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
 
   // Обработчик изменения часового пояса
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newTimezoneName = event.target.value;
-
-    // Находим часовой пояс по имени
-    const newTimezone = timezones.find((tz) => tz.name === newTimezoneName);
+    const newCityName = event.target.value;
+    setCurrentCity(event.target.value);
+    // Находим часовой пояс по названию города
+    const newTimezone = timezones.find((tz) => tz.name === newCityName);
 
     if (newTimezone) {
       dispatch(
-        setTimezone({ id: clockId, timezone: newTimezone.timezone }) // Передаем timezone
+        setTimezone({
+          id: clockId,
+          timezone: newTimezone.timezone,
+          city: newTimezone.name, // Обновляем название города
+        })
       );
     }
   };
 
   return (
-    <select value={selectedClock?.timezone || ''} onChange={handleChange}>
+    <select value={selectedClock?.city || ''} onChange={handleChange}>
       <option value="" disabled>
-        Выберите город
+        {currentCity}
       </option>
       {availableTimezones.map((tz) => (
-        <option key={tz.timezone} value={tz.name}>
+        <option key={tz.name} value={tz.name}>
           {tz.name}
         </option>
       ))}
