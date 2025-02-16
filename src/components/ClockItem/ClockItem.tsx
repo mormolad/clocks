@@ -23,26 +23,27 @@ const ClockItem: React.FC<ClockItemProps> = ({
   // Функция для корректировки Unix-времени с учетом часового пояса
   const getAdjustedUnixTime = (
     unixTime: number,
-    timezoneOffset: string
+    timezoneOffset: number | undefined
   ): number => {
     // Преобразуем смещение часового пояса в число (часы)
-    const targetOffsetHours = parseInt(timezoneOffset, 10);
-    if (isNaN(targetOffsetHours)) {
-      return unixTime; // Если смещение невалидно, возвращаем исходное время
+
+    if (!timezoneOffset) {
+      return unixTime; // Если смещение нет, возвращаем исходное время
+    } else {
+      // Получаем текущее смещение часового пояса пользователя (в минутах)
+      const userOffsetMinutes = new Date().getTimezoneOffset();
+
+      // Преобразуем смещение пользователя в часы
+      const userOffsetHours = -userOffsetMinutes / 60;
+
+      // Вычисляем разницу между целевым смещением и текущим смещением пользователя
+      const offsetDifferenceHours = timezoneOffset - userOffsetHours;
+
+      // Конвертируем разницу в миллисекунды и корректируем Unix-время
+      const offsetDifferenceMilliseconds =
+        offsetDifferenceHours * 60 * 60 * 1000;
+      return unixTime + offsetDifferenceMilliseconds;
     }
-
-    // Получаем текущее смещение часового пояса пользователя (в минутах)
-    const userOffsetMinutes = new Date().getTimezoneOffset();
-
-    // Преобразуем смещение пользователя в часы
-    const userOffsetHours = -userOffsetMinutes / 60;
-
-    // Вычисляем разницу между целевым смещением и текущим смещением пользователя
-    const offsetDifferenceHours = targetOffsetHours - userOffsetHours;
-
-    // Конвертируем разницу в миллисекунды и корректируем Unix-время
-    const offsetDifferenceMilliseconds = offsetDifferenceHours * 60 * 60 * 1000;
-    return unixTime + offsetDifferenceMilliseconds;
   };
 
   // Получаем скорректированное Unix-время
@@ -54,16 +55,21 @@ const ClockItem: React.FC<ClockItemProps> = ({
   const adjustedDate = new Date(adjustedUnixTime);
 
   return (
-    <div className={styles.container_clock}>
-      <Clock clockId={clockId} unixTime={unixTime} />
-      <div className={styles.time}>
-        {`${adjustedDate.toLocaleTimeString('ru-RU', {
-          hour12: false,
-        })}`}
+    clock && (
+      <div className={styles.container_clock}>
+        <Clock
+          clockId={clockId}
+          unixTime={getAdjustedUnixTime(unixTime, clock.timezone)}
+        />
+        <div className={styles.time}>
+          {`${adjustedDate.toLocaleTimeString('ru-RU', {
+            hour12: false,
+          })}`}
+        </div>
+        <TimezoneSelector clockId={clockId} />
+        <button onClick={() => onRemove(clockId)}>Удалить</button>
       </div>
-      <TimezoneSelector clockId={clockId} />
-      <button onClick={() => onRemove(clockId)}>Удалить</button>
-    </div>
+    )
   );
 };
 

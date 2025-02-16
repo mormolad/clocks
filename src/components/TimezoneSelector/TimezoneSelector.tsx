@@ -50,7 +50,6 @@ const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
         setTimezone({
           id: clockId,
           timezone: newTimezone.timezone,
-          city: newTimezone.name, // Обновляем название города
         })
       );
     }

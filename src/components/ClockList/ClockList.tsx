@@ -5,26 +5,26 @@ import { AppDispatch, RootState } from '../../store/store';
 import Loader from '../Loader/Loader';
 import ClockItem from '../ClockItem/ClockItem'; // Импортируем новый компонент
 import styles from './style.module.css';
+import { getUserTimezone, getCurrentCity } from '@/utils/utils';
 
 const ClockList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const clocks = useSelector((state: RootState) => state.clock.clocks);
   const loading = useSelector((state: RootState) => state.clock.loading);
   const [date, setDate] = React.useState(Date.now());
-
-  // Функция для получения текущего часового пояса пользователя
-  const getUserTimeZone = () => {
-    const timezoneOffsetMinutes = new Date().getTimezoneOffset(); // Смещение в минутах
-    const timezoneOffsetHours = -timezoneOffsetMinutes / 60; // Преобразуем в часы
-    return timezoneOffsetHours;
-  };
+  const timezones = useSelector((state: RootState) => state.clock.timezones);
 
   // Добавление новых часов с часовым поясом
   const handleAddClock = () => {
     if (clocks.length < 10) {
       const newClockId = Date.now();
-      const userTimeZone = getUserTimeZone(); // Получаем часовой пояс пользователя
-      dispatch(addClock({ id: newClockId, timezone: userTimeZone }));
+      dispatch(
+        addClock({
+          id: newClockId,
+          timezone: getUserTimezone(), // Получаем часовой пояс пользователя
+          city: getCurrentCity(timezones), //Получаем
+        })
+      );
     }
   };
 

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // Интерфейс для отдельных часов
 interface Clock {
   id: number;
-  timezone: string;
+  timezone: number;
   city: string;
 }
 
@@ -11,14 +11,14 @@ interface Clock {
 interface ClockState {
   clocks: Clock[];
   loading: boolean;
-  timezones: { name: string; timezone: string }[];
+  timezones: { name: string; timezone: number }[];
 }
 
 // Начальное состояние
 const initialState: ClockState = {
   clocks: [],
   loading: true,
-  timezones: [{ name: '', timezone: '' }],
+  timezones: [{ name: '', timezone: 0 }],
 };
 
 // Создание среза
@@ -29,7 +29,11 @@ const clockSlice = createSlice({
     // Добавление новых часов
     addClock: (
       state: ClockState,
-      action: PayloadAction<{ id: number; timezone: string; city: string }>
+      action: PayloadAction<{
+        id: number;
+        timezone: number;
+        city: string;
+      }>
     ) => {
       state.clocks.push({
         id: action.payload.id,
@@ -46,7 +50,7 @@ const clockSlice = createSlice({
     // Установка часового пояса для конкретных часов
     setTimezone: (
       state: ClockState,
-      action: PayloadAction<{ id: number; timezone: string }>
+      action: PayloadAction<{ id: number; timezone: number }>
     ) => {
       const clock = state.clocks.find(
         (clock) => clock.id === action.payload.id
@@ -58,7 +62,7 @@ const clockSlice = createSlice({
     // Установка списка часовых поясов
     setTimezones: (
       state: ClockState,
-      action: PayloadAction<{ name: string; timezone: string }[]>
+      action: PayloadAction<{ name: string; timezone: number }[]>
     ) => {
       state.timezones = action.payload;
       state.loading = false;
