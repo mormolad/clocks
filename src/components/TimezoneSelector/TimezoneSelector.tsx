@@ -44,7 +44,7 @@ const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
     setCurrentCity(event.target.value);
     // Находим часовой пояс по названию города
     const newTimezone = timezones.find((tz) => tz.name === newCityName);
-
+    console.log(newTimezone);
     if (newTimezone) {
       dispatch(
         setTimezone({

@@ -7,18 +7,26 @@ interface Clock {
   city: string;
 }
 
+// Интерфейс для часового пояса
+interface Timezone {
+  name: string;
+  timezone: number;
+}
+
 // Интерфейс для состояния
 interface ClockState {
   clocks: Clock[];
   loading: boolean;
-  timezones: { name: string; timezone: number }[];
+  timezones: Timezone[];
+  availableTimezones: Timezone[];
 }
 
 // Начальное состояние
 const initialState: ClockState = {
   clocks: [],
   loading: true,
-  timezones: [{ name: '', timezone: 0 }],
+  timezones: [],
+  availableTimezones: [],
 };
 
 // Создание среза
@@ -60,17 +68,27 @@ const clockSlice = createSlice({
       }
     },
     // Установка списка часовых поясов
-    setTimezones: (
-      state: ClockState,
-      action: PayloadAction<{ name: string; timezone: number }[]>
-    ) => {
+    setTimezones: (state: ClockState, action: PayloadAction<Timezone[]>) => {
       state.timezones = action.payload;
+      console.table(action.payload);
       state.loading = false;
+    },
+    // Установка списка доступных часовых поясов
+    setAvailableTimezones: (
+      state: ClockState,
+      action: PayloadAction<Timezone[]>
+    ) => {
+      state.availableTimezones = action.payload;
     },
   },
 });
 
 // Экспорт действий и редюсера
-export const { addClock, removeClock, setTimezone, setTimezones } =
-  clockSlice.actions;
+export const {
+  addClock,
+  removeClock,
+  setTimezone,
+  setTimezones,
+  setAvailableTimezones,
+} = clockSlice.actions;
 export default clockSlice.reducer;

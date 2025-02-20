@@ -1,13 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
 interface ClockProps {
-  clockId: number;
   unixTime: number; // Принимаем Unix-время
 }
 
 const Clock: React.FC<ClockProps> = ({ unixTime }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  // Получаем данные о часах из Redux
 
   // Преобразуем Unix-время в объект Date
   const date = new Date(unixTime);

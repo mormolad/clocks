@@ -22,7 +22,7 @@ const ClockList: React.FC = () => {
         addClock({
           id: newClockId,
           timezone: getUserTimezone(), // Получаем часовой пояс пользователя
-          city: getCurrentCity(timezones), //Получаем
+          city: getCurrentCity(timezones), //Получаем город
         })
       );
     }

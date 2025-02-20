@@ -58,7 +58,7 @@ const ClockItem: React.FC<ClockItemProps> = ({
     clock && (
       <div className={styles.container_clock}>
         <Clock
-          clockId={clockId}
+         
           unixTime={getAdjustedUnixTime(unixTime, clock.timezone)}
         />
         <div className={styles.time}>
