@@ -1,5 +1,10 @@
 .app {
   height: min-content;
-  width: 1000px;
   margin: 20px auto 0 auto;
+}
+
+.title {
+  text-align: center;
+  margin: 20px;
+  height: 80px;
 }

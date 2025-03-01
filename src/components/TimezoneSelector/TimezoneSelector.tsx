@@ -1,11 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTimezone } from '../../store/reducers';
 import { AppDispatch, RootState } from '../../store/store';
-
-interface TimezoneSelectorProps {
-  clockId: number;
-}
+import { TimezoneSelectorProps } from '../../types/types';
 
 const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
   //Получить текущий город
@@ -23,18 +20,17 @@ const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
     state.clock.clocks.find((clock) => clock.id === clockId)
   );
   const timezones = useSelector((state: RootState) => state.clock.timezones);
-
+  const [availableTimezones, setAvailableTimezones] = React.useState(timezones);
   const [currentCity, setCurrentCity] = React.useState(
     getCurrentCity(timezones)
   );
 
   // Мемоизация доступных часовых поясов
-  const availableTimezones = useMemo(() => {
-    return timezones.filter(
-      (tz) =>
-        !clocks.some(
-          (clock) => clock.timezone === tz.timezone && clock.id !== clockId
-        )
+  useEffect(() => {
+    setAvailableTimezones(
+      timezones.filter(
+        (tz) => !clocks.some((clock) => clock.timezone === tz.timezone * 1)
+      )
     );
   }, [clocks, timezones, clockId]);
 
@@ -44,12 +40,12 @@ const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
     setCurrentCity(event.target.value);
     // Находим часовой пояс по названию города
     const newTimezone = timezones.find((tz) => tz.name === newCityName);
-    console.log(newTimezone);
     if (newTimezone) {
       dispatch(
         setTimezone({
           id: clockId,
           timezone: newTimezone.timezone,
+          city: newTimezone.name,
         })
       );
     }
@@ -57,7 +53,7 @@ const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ clockId }) => {
 
   return (
     <select value={selectedClock?.city || ''} onChange={handleChange}>
-      <option value="" disabled>
+      <option value={currentCity} disabled>
         {currentCity}
       </option>
       {availableTimezones.map((tz) => (

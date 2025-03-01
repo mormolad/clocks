@@ -2,7 +2,8 @@
   width: 200px;
   display: flex;
   flex-direction: column;
-  margin: 10px;
+  margin: 10px auto;
+  justify-content: center;
 }
 
 .container_clocks {
@@ -11,4 +12,8 @@
 }
 .time {
   text-align: center;
+}
+
+.button {
+  margin-left: 10px;
 }

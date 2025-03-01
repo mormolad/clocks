@@ -1,8 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-
-interface ClockProps {
-  unixTime: number; // Принимаем Unix-время
-}
+import { ClockProps } from '@/types/types';
 
 const Clock: React.FC<ClockProps> = ({ unixTime }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

@@ -59,7 +59,9 @@ const ClockList: React.FC = () => {
             ))}
           </div>
           {clocks.length < 10 && (
-            <button onClick={handleAddClock}>Добавить часы</button>
+            <button className={styles.button} onClick={handleAddClock}>
+              Добавить часы
+            </button>
           )}
         </>
       )}
