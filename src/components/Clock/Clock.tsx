@@ -50,23 +50,23 @@ const Clock: React.FC<ClockProps> = ({ unixTime }) => {
     // Центр циферблата
     ctx.beginPath();
     ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
-    ctx.fillStyle = '#cccccc'; // Серебристый
+    ctx.fillStyle = '#ffffff'; // Серебристый
     ctx.fill();
 
-    // Логотип "Torgbox"
+    // "Torgbox"
     ctx.font = `${radius * 0.2}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center'; // Выравнивание по центру
     ctx.fillText('Torgbox', 0, -radius * 0.4);
 
-    // Логотип "Ваш бизнес-помощник"
+    // "Ваш бизнес-помощник"
     ctx.font = `${radius * 0.1}px Arial`;
     ctx.fillText('Ваш бизнес-помощник', 0, -radius * 0.25);
 
     drawNumbers(ctx, radius); // Добавляем метки часов
   };
 
-  // Функция для рисования стрелок в стиле Rolex
+  // Функция для рисования стрелок
   const drawHand = (
     ctx: CanvasRenderingContext2D,
     pos: number,
