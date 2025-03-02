@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Приложение "Мировые Часы"
 
-## Getting Started
+Это веб-приложение, которое отображает часы в реальном времени с учетом выбранного пользователем часового пояса. Пользователь может добавлять на страницу до 10 часов, каждый из которых показывает время в выбранном городе. Часы отображаются в виде аналоговых циферблатов с часовой, минутной и секундной стрелками.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Основные функции
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Локальное время с учетом часового пояса**: Все часы отображают время с учетом выбранного пользователем часового пояса.
+2. **Изменение количества часов**: Пользователь может добавлять или удалять часы на странице (от 1 до 10).
+3. **Загрузка часовых поясов**: Список городов и их часовых поясов загружается из файла `timezones.json` через асинхронный запрос.
+4. **Выбор города**: Часовой пояс выбирается через выпадающий список городов. В списке отображаются только те города, которые не выбраны в других часах.
+5. **Аналоговые часы**: Часы имеют три стрелки (часовая, минутная, секундная) и циферблат диаметром 200 пикселей.
+6. **Поддержка современных браузеров**: Приложение работает в Chrome (версии старше 57), Firefox (версии старше 52) и Opera (версии старше 44).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Технологии
 
-## Learn More
+- **Next.JS**: Для созданиям проекта.
+- **Redux Toolkit**: Для управления состоянием приложения.
+- **Webpack**: Для сборки проекта.
+- **Canvas**: Для отрисовки аналоговых часов.
+- **Fetch API**: Для загрузки данных о часовых поясах из файла `timezones.json`.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Установка и запуск
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Клонируйте репозиторий**:
 
-## Deploy on Vercel
+   ```bash
+   git clone https://github.com/mormolad/clocks.git
+   cd clocks
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Установите зависимости**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm install
+   ```
+
+3. **Запустите проект**:
+
+   ```bash
+   npm run start
+   ```
+
+4. **Откройте в браузере**:
+   После запуска приложение будет доступно по адресу [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Структура проекта
+
+- **src/components**: React-компоненты (часы, выпадающий список, уведомления).
+- **src/redux**: Redux-редьюсеры и actions для управления состоянием.
+- **src/assets**: Статические файлы, такие как `timezones.json`.
+- **src/public**: HTML-шаблон и другие статические файлы.
+
+---
+
+## Как это работает
+
+1. Приложение загружает список городов и их часовых поясов из файла `timezones.json`.
+2. Пользователь может добавлять часы на страницу, выбирая город из выпадающего списка. Если город выбран в других часах, то в выпадающем списке его не будет.
+3. Каждые часы отображают время в выбранном городе с учетом локального времени устройства пользователя.
+4. Часы отрисовываются с использованием Canvas, что позволяет легко управлять их внешним видом и анимацией.
+
+---
+
+## Почему выбраны эти технологии?
+
+- **Next.JS и Redux Toolkit**: Next.JS был выбран за современность и удобство. Redux Toolkit за локоничность при реализации данного приложения.
+- **Webpack**: Используется для сборки проекта и оптимизации кода.
+- **Canvas**: Позволяют гибко управлять графикой и анимацией для отрисовки часов.
+- **DeepSeek** : Для ускорения процесса в трудных местах.
+
+---
+
+## Дополнительные настройки.
+
+- **ESlint**: настроил правило для отлавливания console.log. console.error и console.warn допускается.
+- **package.json**: в Next.JS режим разработки приложение запускается командой 'npm run dev', заменил на 'npm run start' согласно ТЗ.
+
+## Заключение
+
+Это приложение демонстрирует использование современных веб-технологий для создания интерактивного и отзывчивого интерфейса. Оно соответствует всем техническим требованиям и может быть легко расширено для добавления новых функций.

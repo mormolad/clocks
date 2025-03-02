@@ -10,6 +10,7 @@ const Loader = () => {
         src={load}
         alt="Loading"
         className={style.image}
+        priority
       />
     </div>
   );
