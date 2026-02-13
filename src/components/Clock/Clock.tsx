@@ -57,11 +57,11 @@ const Clock: React.FC<ClockProps> = ({ unixTime }) => {
     ctx.font = `${radius * 0.2}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center'; // Выравнивание по центру
-    ctx.fillText('Torgbox', 0, -radius * 0.4);
+    ctx.fillText('Антон', 0, -radius * 0.4);
 
     // "Ваш бизнес-помощник"
     ctx.font = `${radius * 0.1}px Arial`;
-    ctx.fillText('Ваш бизнес-помощник', 0, -radius * 0.25);
+    ctx.fillText('Вэб-разработчик', 0, -radius * 0.25);
 
     drawNumbers(ctx, radius); // Добавляем метки часов
   };
